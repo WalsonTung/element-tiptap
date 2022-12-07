@@ -11,6 +11,7 @@ export const ALLOWED_NODE_TYPES = [
 ];
 
 const NUMBER_VALUE_PATTERN = /^\d+(.\d+)?$/;
+const NUMBER_PART_PARTTERN = /^\d+(.\d+)?/;
 
 export function isLineHeightActive(state: EditorState, lineHeight: string): boolean {
   const { selection, doc } = state;
@@ -46,6 +47,11 @@ export function transformLineHeightToCSS(value: string | number): string {
   if (NUMBER_VALUE_PATTERN.test(strValue)) {
     const numValue = parseFloat(strValue);
     strValue = String(Math.round(numValue * 100)) + '%';
+  } else {
+    const suffix = strValue.replace(NUMBER_PART_PARTTERN, '');
+    if (suffix !== '%') {
+      return strValue;
+    }
   }
 
   return parseFloat(strValue) * LINE_HEIGHT_100 + '%';
@@ -61,6 +67,11 @@ export function transformCSStoLineHeight(value: string): string {
     const numValue = parseFloat(value);
     strValue = String(Math.round(numValue * 100)) + '%';
     if (strValue === DEFAULT_LINE_HEIGHT) return '';
+  } else {
+    const suffix = strValue.replace(NUMBER_PART_PARTTERN, '');
+    if (suffix !== '%') {
+      return strValue;
+    }
   }
 
   return parseFloat(strValue) / LINE_HEIGHT_100 + '%';
